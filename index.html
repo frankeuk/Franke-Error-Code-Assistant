@@ -151,6 +151,33 @@
         }
     </style>
 </head>
+    
+<style>
+  /* Default styles already exist; these are overrides for embed mode */
+  .embed body {
+    background: transparent !important;        /* removes the grey gradient */
+    padding: 0 !important;                     /* no outer padding */
+  }
+  .embed .container {
+    max-width: 740px;                          /* optional: narrower card */
+    margin: 0 auto !important;
+    border-radius: 0 !important;               /* remove rounded edges if you prefer */
+    box-shadow: none !important;               /* remove drop shadow */
+  }
+  .embed header {
+    border-radius: 0 !important;
+  }
+  /* Optional: tighten vertical spacing */
+  .  .embed main { padding: 20px !important; }
+<script>
+  // Enable "embed mode" when the URL has ?embed=1
+  (function () {
+    const isEmbed = new URLSearchParams(window.location.search).get('embed') === '1';
+    if (isEmbed) {
+      document.documentElement.classList.add('embed');
+    }
+  })();
+</
 <body>
 <div class="container">
     <header>
