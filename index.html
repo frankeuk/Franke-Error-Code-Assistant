@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<!-- saved from url=(0049)file:///C:/Users/HN986/Downloads/new%201%201.html -->
+<html lang="de"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Franke Fehlercode-Assistent</title>
+    <meta name="description" content="Schnelle Hilfe für Franke Kaffeemaschinen-Fehlercodes – Callcenter &amp; Techniker">
+    <style>
+        :root {
+            --franke-red: #cc0000;
+            --franke-dark: #333333;
+            --franke-light-gray: #f4f4f4;
+            --franke-medium-gray: #cccccc;
+            --franke-blue: #007bff;
+            --franke-green: #008000;
+            --transition: all 0.3s ease;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: var(--franke-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        header {
+            background: var(--franke-red);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        h1 { margin: 0; font-size: 1.8rem; font-weight: 600; }
+        #language-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        #language-toggle:hover { background: white; color: var(--franke-red); }
+        main { padding: 30px; }
+        #index-view { text-align: center; transition: opacity 0.4s ease; }
+        #index-view h2 { color: var(--franke-dark); margin-bottom: 15px; font-size: 1.4rem; }
+        .input-group {
+            display: flex; justify-content: center; gap: 10px; margin: 20px 0; flex-wrap: wrap;
+        }
+        #code-input {
+            padding: 14px; font-size: 1.1rem; border: 2px solid var(--franke-medium-gray);
+            border-radius: 8px; width: 180px; text-align: center; transition: var(--transition);
+        }
+        #code-input:focus {
+            outline: none; border-color: var(--franke-blue);
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+        }
+        #search-button {
+            padding: 14px 28px; background: var(--franke-red); color: white; border: none; border-radius: 8px;
+            font-weight: 600; cursor: pointer; transition: var(--transition); min-width: 140px;
+        }
+        #search-button:hover { background: #a00000; transform: translateY(-1px); }
+        #error-message { min-height: 24px; margin-top: 15px; font-weight: 500; color: var(--franke-red); }
+
+        /* === Beispiele unter Eingabefeld === */
+        .examples {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        .examples button {
+            border: 1px solid var(--franke-medium-gray);
+            background: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .examples button:hover { background: var(--franke-light-gray); }
+
+        /* === Fehleranimation für Eingabefeld === */
+        .input-error { border-color: #d33 !important; animation: shake 0.2s 2; }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 50%{transform:translateX(4px)} }
+
+        #result-view { display: none; opacity: 0; transition: opacity 0.4s ease; }
+        #result-header {
+            background: var(--franke-dark); color: white; padding: 20px; border-radius: 10px;
+            margin-bottom: 25px; text-align: center;
+        }
+        #result-header h2 { margin: 0 0 8px; font-size: 1.8rem; font-weight: 600; }
+        #result-header p { margin: 0; font-style: italic; opacity: 0.9; }
+        .solutions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .solution-box {
+            padding: 22px; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: var(--transition);
+        }
+        .solution-box:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+        .solution-box h3 { margin: 0 0 15px; padding-bottom: 8px; border-bottom: 3px solid; font-size: 1.2rem; font-weight: 600; }
+        #callcenter-solution { background: #e8f5e8; border: 1px solid #a8e6a8; }
+        #callcenter-solution h3 { color: var(--franke-green); border-color: var(--franke-green); }
+        #official-solution { background: #fdf0f0; border: 1px solid #f5c6cb; }
+        #official-solution h3 { color: var(--franke-red); border-color: var(--franke-red); }
+        #official-solution ul { margin: 12px 0; padding-left: 20px; }
+        #official-solution li { margin-bottom: 6px; position: relative; }
+        #official-solution li:before { content: "→"; color: var(--franke-red); font-weight: bold; margin-right: 8px; }
+        #back-button {
+            display: block; width: 100%; padding: 14px; background: var(--franke-blue); color: white; border: none;
+            border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: var(--transition);
+        }
+        #back-button:hover { background: #0056b3; transform: translateY(-1px); }
+
+        /* Fokus sichtbar (A11y) */
+        #search-button:focus, #back-button:focus, #language-toggle:focus, .examples button:focus {
+            outline: 3px solid #7fbfff; outline-offset: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .solutions-grid { grid-template-columns: 1fr; }
+            .input-group { flex-direction: column; align-items: center; }
+            #code-input, #search-button { width: 100%; max-width: 300px; }
+            h1 { font-size: 1.5rem; }
+        }
+        @media (max-width: 480px) {
+            main { padding: 20px; }
+            header { padding: 15px; }
+        }
+        .sr-only {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+            clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+        }
+
+        /* Bewegungen reduzieren beachten */
+        @media (prefers-reduced-motion: reduce) {
+          * { transition: none !important; animation: none !important; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1 id="main-title">Franke Error Code Assistant</h1>
+        <button id="language-toggle" aria-label="Sprache wechseln">Wechsel zu Deutsch</button>
+    </header>
+    <main>
+        <section id="index-view" aria-live="polite" style="display: block;">
+            <h2 id="index-instruction">Enter the 3-digit error code</h2>
+            <div class="input-group">
+                <input type="text" id="code-input" placeholder="e.g. 049" maxlength="3" inputmode="numeric" pattern="[0-9]*" aria-label="Fehlercode eingeben" autocomplete="off" title="Bitte exakt drei Ziffern eingeben (z. B. 049)">
+                <button id="search-button">Search Solution</button>
+            </div>
+            <p id="error-message" role="alert"></p>
+
+            <!-- === Beispiele === -->
+            <div class="examples" aria-label="Beispielcodes">
+              <button type="button" data-c="027">027</button>
+              <button type="button" data-c="049">049</button>
+              <button type="button" data-c="079">079</button>
+            </div>
+        </section>
+
+        <section id="result-view" aria-live="polite" style="display: none; opacity: 0;">
+            <div id="result-header">
+                <h2 id="result-code-text"></h2>
+                <p id="result-short-text"></p>
+            </div>
+            <div class="solutions-grid">
+                <article id="callcenter-solution" class="solution-box">
+                    <h3 id="cc-title">Immediate Solution (Call Center)</h3>
+                    <p id="cc-solution-content"></p>
+                </article>
+                <article id="official-solution" class="solution-box">
+                    <h3 id="official-title">Official Documentation (Technician)</h3>
+                    <p><strong id="official-error-label">Error Message:</strong> <span id="official-error-msg"></span></p>
+                    <p><strong id="official-hints-label">Troubleshooting Hints:</strong></p>
+                    <ul id="official-hints-list"></ul>
+                    <!-- Copy Button -->
+                    <button id="copy-steps" type="button" style="margin-top:10px">Schritte kopieren</button>
+                </article>
+            </div>
+            <button id="back-button">Back to Search</button>
+        </section>
+    </main>
+</div>
+
+<script>
+    // === Sprache ===
+    let lang = localStorage.getItem('lang') || 'de';
+    const t = {
+        de: {
+            title: 'Franke Fehlercode-Assistent',
+            instruction: 'Bitte geben Sie den 3-stelligen Fehlercode ein',
+            placeholder: 'z.B. 049',
+            search: 'Lösung suchen',
+            notFound: 'Fehlercode {code} nicht gefunden. Bitte überprüfen.',
+            ccTitle: 'Sofort-Lösung (Call Center)',
+            techTitle: 'Offizielle Dokumentation (Techniker)',
+            errorMsg: 'Fehlermeldung:',
+            hints: 'Hinweise zur Fehlerbehebung:',
+            back: 'Zurück zur Suche',
+            noSolution: 'Keine Callcenter-Lösung verfügbar. Techniker kontaktieren.',
+            noHints: '(Keine Hinweise)',
+            toggle: 'Switch to English'
+        },
+        en: {
+            title: 'Franke Error Code Assistant',
+            instruction: 'Enter the 3-digit error code',
+            placeholder: 'e.g. 049',
+            search: 'Search Solution',
+            notFound: 'Error code {code} not found. Please check.',
+            ccTitle: 'Immediate Solution (Call Center)',
+            techTitle: 'Official Documentation (Technician)',
+            errorMsg: 'Error Message:',
+            hints: 'Troubleshooting Hints:',
+            back: 'Back to Search',
+            noSolution: 'No call center solution available. Contact technician.',
+            noHints: '(No hints)',
+            toggle: 'Wechsel zu Deutsch'
+        }
+    };
+
+    // === Fehlerdaten ===
+    const errorData = [
+        {code:'009',short:'Timeout Brühgruppenmotor',short_en:'Brew Group Motor Timeout',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Die registrierte Anzahl Inkremente während der Fahrbewegung der Brühkammer ist zu klein. Bitte starten Sie das System neu.',official_msg_en:'The registered number of increments during brew chamber movement is too small. Please restart the system.',official_hints:['System neu starten','Inkrementsensor prüfen','Motor prüfen','Brühgruppe mit Pinsel reinigen'],official_hints_en:['Restart system','Check increment sensor','Check motor','Clean brew group with brush']},
+        {code:'010',short:'Timeout Brühgruppenmotor',short_en:'Brew Group Motor Timeout',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Die registrierte Anzahl Inkremente während der Fahrbewegung der Brühkammer ist zu klein. Bitte starten Sie das System neu.',official_msg_en:'The registered number of increments during brew chamber movement is too small. Please restart the system.',official_hints:['System neu starten','Inkrementsensor prüfen','Motor prüfen','Brühgruppe mit Pinsel reinigen'],official_hints_en:['Restart system','Check increment sensor','Check motor','Clean brew group with brush']},
+        {code:'011',short:'Timeout Brühgruppenmotor',short_en:'Brew Group Motor Timeout',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Die registrierte Anzahl Inkremente während der Fahrbewegung der Brühkammer ist zu klein. Bitte starten Sie das System neu.',official_msg_en:'The registered number of increments during brew chamber movement is too small. Please restart the system.',official_hints:['System neu starten','Inkrementsensor prüfen','Motor prüfen','Brühgruppe mit Pinsel reinigen'],official_hints_en:['Restart system','Check increment sensor','Check motor','Clean brew group with brush']},
+        {code:'012',short:'Timeout Brühgruppenmotor',short_en:'Brew Group Motor Timeout',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Die registrierte Anzahl Inkremente während der Fahrbewegung der Brühkammer ist zu klein. Bitte starten Sie das System neu.',official_msg_en:'The registered number of increments during brew chamber movement is too small. Please restart the system.',official_hints:['System neu starten','Inkrementsensor prüfen','Motor prüfen','Brühgruppe mit Pinsel reinigen'],official_hints_en:['Restart system','Check increment sensor','Check motor','Clean brew group with brush']},
+        {code:'013',short:'Timeout Brühgruppenmotor',short_en:'Brew Group Motor Timeout',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Die registrierte Anzahl Inkremente während der Fahrbewegung der Brühkammer ist zu klein. Bitte starten Sie das System neu.',official_msg_en:'The registered number of increments during brew chamber movement is too small. Please restart the system.',official_hints:['System neu starten','Inkrementsensor prüfen','Motor prüfen','Brühgruppe mit Pinsel reinigen'],official_hints_en:['Restart system','Check increment sensor','Check motor','Clean brew group with brush']},
+        {code:'014',short:'Inkrementsensor Brühgruppe',short_en:'Brew Group Increment Sensor',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Es wurde mehr als ein negatives Inkrement registriert. Die Brühkammer fährt in die falsche Richtung. Bitte prüfen Sie die Verdrahtung des Inkrementsensors.',official_msg_en:'More than one negative increment detected. Brew chamber moving wrong direction. Check increment sensor wiring.',official_hints:['System neu starten','Inkrementsensor prüfen','Motor prüfen','Brühgruppe mit Pinsel reinigen'],official_hints_en:['Restart system','Check increment sensor','Check motor','Clean brew group with brush']},
+        {code:'015',short:'Timeout Brühgruppenmotor',short_en:'Brew Group Motor Timeout',cc_solution:'Während der Reinigung ist ein Motortimeout aufgetreten. Km Neustarten und Reinigung erneut durchführen.<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Motor timeout during cleaning. Restart machine and repeat cleaning.<br>If error returns → Technician',official_msg:'Während der Reinigung ist ein Motor-Timeout aufgetreten.',official_msg_en:'Motor timeout occurred during cleaning.',official_hints:['System neu starten','Reinigung wiederholen'],official_hints_en:['Restart system','Repeat cleaning']},
+        {code:'027',short:'Brühgruppenverriegelung',short_en:'Brew Group Lock',cc_solution:'Die Brühgruppe ist nicht verriegelt.<br>Türe öffnen und roten Hebel Senkrecht stellen.',cc_solution_en:'Brew group not locked.<br>Open door and set red lever vertical.',official_msg:'Die Brühgruppe ist nicht verriegelt.',official_msg_en:'The brew group is not locked.',official_hints:[],official_hints_en:[]},
+        {code:'028',short:'Brühgruppe fehlt',short_en:'Brew Group Missing',cc_solution:'Kunde hat die Verriegelung nicht korrekt betätigt',cc_solution_en:'Customer did not lock correctly',official_msg:'Die Brühgruppe fehlt.',official_msg_en:'Brew group is missing.',official_hints:[],official_hints_en:[]},
+        {code:'030',short:'Brühgruppe initialisieren',short_en:'Initialize Brew Group',cc_solution:null,cc_solution_en:null,official_msg:'Beim Initialisieren trat ein Fehler bei der Rekalibrierung der Brühgruppe auf.',official_msg_en:'Error during brew group recalibration on initialization.',official_hints:['System neu starten','Inkrementsensor prüfen','Motor prüfen','Brühgruppe mit Pinsel reinigen'],official_hints_en:['Restart system','Check increment sensor','Check motor','Clean brew group with brush']},
+        {code:'048',short:'Brühkammer offen',short_en:'Brew Chamber Open',cc_solution:null,cc_solution_en:null,official_msg:'Der Brühvorgang wurde abgebrochen, da die Brühkammer zu weit geöffnet werden konnte. Bitte wählen Sie ein neues Produkt oder starten Sie das System neu, damit die Brühgruppe rekalibriert wird.',official_msg_en:'Brew process aborted because brew chamber could be opened too far. Select new product or restart to recalibrate.',official_hints:['Neues Produkt beziehen (die Brühgruppe wird rekalibriert)','Bei mehrmaligem Auftreten Werte kontrollieren (siehe Programmierung, Menüpunkt 5.2 Brühgruppe)'],official_hints_en:['Dispense new product (brew group recalibrates)','If recurring, check values (Programming, Menu 5.2 Brew Group)']},
+        {code:'049',short:'Brühkammer offen',short_en:'Brew Chamber Open',cc_solution:'Die Brühkammer konnte nicht geschlossen werden<br>Brühgruppe beinhaltet einen alten Kaffeesatzkuchen. Kunde instruieren mit dem Löffel den alten Satz zu entfernen und Neustart der Kaffeemaschine',cc_solution_en:'Brew chamber could not close<br>Old coffee puck inside. Instruct customer to remove with spoon and restart',official_msg:'Die Brühkammer konnte nicht geschlossen werden. Bitte prüfen Sie die Mahlmenge und wählen Sie ein neues Produkt.',official_msg_en:'Brew chamber could not close. Check grind amount and select new product.',official_hints:['Neues Produkt beziehen (recalibrates)','Check grind amount','Check grinder calibration, Programming, Grinder 1-3'],official_hints_en:['Dispense new product (recalibrates)','Check grind amount','Check grinder calibration, Programming, Grinder 1-3']},
+        {code:'060',short:'Boiler 1 füllen',short_en:'Fill Boiler 1',cc_solution:'Abfragen, ob Wassertank vorhanden oder Leitung geknickt ist, Evlt Baustelle im Haus? Km neustarten, wenn Fehler wieder Kommt → Techniker',cc_solution_en:'Check water tank or kinked line, construction? Restart, if error returns → Technician',official_msg:'Der Boiler mit Heizung1 konnte nicht gefüllt werden. Bitte starten Sie das System neu.',official_msg_en:'Boiler with heater 1 could not be filled. Please restart.',official_hints:['System neu starten','Pumpendruck prüfen, Inbetriebnahme, Menüpunkt 0.3','Druck einstellen','Überdruckventil Boiler 1 (Kaffee) auf Dichtheit prüfen (Wasser fliesst in die Tropfschale)','Wasserversorgung prüfen (Dichtheit und Zulauf)'],official_hints_en:['Restart system','Check pump pressure, Commissioning, Menu 0.3','Adjust pressure','Check boiler 1 overpressure valve (water in drip tray)','Check water supply (tightness and flow)']},
+        {code:'061',short:'Boiler 2 füllen',short_en:'Fill Boiler 2',cc_solution:'meistens Starke Kalkbildung im Boiler → Kunde instruieren, dass man mit mehrmals Neustarten den Fehlerwahrscheinlich überbrücken kann, braucht aber in jedem Fall einen Techniker',cc_solution_en:'Usually heavy limescale. Instruct customer to restart multiple times to bypass, but technician required',official_msg:'Der Boiler mit Heizung 2 konnte das erste Mal nicht gefüllt werden. Die Heizung wird abgeschaltet. Bitte starten Sie das System neu.',official_msg_en:'Boiler with heater 2 could not be filled first time. Heater is switched off. Please restart.',official_hints:['System neu starten','Überdruckventil Boiler 2 (Heisswasser) auf Dichtheit prüfen (Wasser fliesst in die Tropfschale)','Füllstandssensor überprüfen (Verbindung/Verkalkung), Programmierung, Menüpunkt 5.10 Eingänge einzeln','Wasserversorgung prüfen (Dichtheit und Zulauf)'],official_hints_en:['Restart system','Check boiler 2 overpressure valve (water in drip tray)','Check level sensor (connection/limescale), Programming, Menu 5.10 Inputs','Check water supply (tightness and flow)']},
+        {code:'062',short:'Boiler 2 füllen',short_en:'Fill Boiler 2',cc_solution:'meistens Starke Kalkbildung im Boiler → Kunde instruieren, dass man mit mehrmals Neustarten den Fehlerwahrscheinlich überbrücken kann, braucht aber in jedem Fall einen Techniker',cc_solution_en:'Usually heavy limescale. Instruct customer to restart multiple times to bypass, but technician required',official_msg:'Der Boiler mit Heizung 2 konnte das erste Mal nicht gefüllt werden. Die Heizung wird abgeschaltet. Bitte starten Sie das System neu.',official_msg_en:'Boiler with heater 2 could not be filled first time. Heater is switched off. Please restart.',official_hints:['System neu starten','Überdruckventil Boiler 2 (Heisswasser) auf Dichtheit prüfen (Wasser fliesst in die Tropfschale)','Füllstandssensor überprüfen (Verbindung/Verkalkung), Programmierung, Menüpunkt 5.10 Eingänge einzeln','Wasserversorgung prüfen (Dichtheit und Zulauf)'],official_hints_en:['Restart system','Check boiler 2 overpressure valve (water in drip tray)','Check level sensor (connection/limescale), Programming, Menu 5.10 Inputs','Check water supply (tightness and flow)']},
+        {code:'079',short:'Flowmeterfehler 1',short_en:'Flowmeter Error 1',cc_solution:'Der Wasserdurchfluss des Brühboilers ist gestört.<br>Brühkolben reinigen, evtl Ersatzbrühgruppe einsetzen und anschliessend Neustart der KM → Ansonsten Techniker schicken',cc_solution_en:'Brew boiler water flow disturbed.<br>Clean piston, insert spare brew group, restart. Otherwise send technician',official_msg:'Der Wasserdurchfluss des Brühboilers ist gestört. Das Flowmeter erhält keine oder zu wenige Impulse. Bitte starten Sie das System neu oder wählen Sie ein weiteres Produkt.',official_msg_en:'Brew boiler water flow disturbed. Flowmeter receives no or too few pulses. Restart or select another product.',official_hints:['Mahlgrad prüfen (darf nicht zu fein sein)','Produkteinstellungen prüfen','Weiteres Produkt wählen','Flowmeter prüfen'],official_hints_en:['Check grind (not too fine)','Check product settings','Select another product','Check flowmeter']},
+        {code:'080',short:'Flowmeterfehler 2',short_en:'Flowmeter Error 2',cc_solution:'Der Wasserdurchfluss des Teeboilers ist gestört. Braucht in jedem Fall einen Techniker. Nicht Schlimm da nur Tee nicht geht.',cc_solution_en:'Tea boiler water flow disturbed. Technician required. Not critical → only tea affected.',official_msg:'Der Wasserdurchfluss des Teeboilers ist gestört. Das Flowmeter erhält keine oder zu wenige Impulse. Bitte das System neu starten oder ein weiteres Produkt wählen.',official_msg_en:'Tea boiler water flow disturbed. Flowmeter receives no or too few pulses. Restart or select another product.',official_hints:['Produkteinstellungen prüfen','Weiteres Produkt wählen','Flowmeter prüfen','Absperrhahn öffnen'],official_hints_en:['Check product settings','Select another product','Check flowmeter','Open shut-off valve']},
+        {code:'081',short:'Flowmeterfehler 3',short_en:'Flowmeter Error 3',cc_solution:'Der Wasserdurchfluss des Kaltwasser-Bypass ist gestört. Techniker Einsatz nötig, Maschine funktioniert aber trotzdem',cc_solution_en:'Cold water bypass flow disturbed. Technician required, machine still works',official_msg:'Der Wasserdurchfluss des Kaltwasser-Bypass ist gestört. Das Flowmeter erhält keine oder zu wenige Impulse. Bitte das System neu starten oder ein weiteres Produkt wählen.',official_msg_en:'Cold water bypass flow disturbed. Flowmeter receives no or too few pulses. Restart or select another product.',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'082',short:'Flowmeterfehler 4',short_en:'Flowmeter Error 4',cc_solution:'Der Wasserdurchfluss des Iced-Coffee-Moduls ist gestört. Technikereinsatz auslösen',cc_solution_en:'Iced coffee module flow disturbed. Trigger technician',official_msg:'Der Wasserdurchfluss des Iced-Coffee-Moduls ist gestört. Das Flowmeter erhält keine oder zu wenige Impulse. Bitte das System neu starten oder ein weiteres Produkt wählen.',official_msg_en:'Iced coffee module flow disturbed. Flowmeter receives no or too few pulses. Restart or select another product.',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'083',short:'Flowmeterfehler 5',short_en:'Flowmeter Error 5',cc_solution:'Der Kaltwasserdurchfluss ist gestört. Das Flowmeter erhält keine oder zu wenige Impulse Technikereinsatz auslösen',cc_solution_en:'Cold water flow disturbed. Flowmeter no or too few pulses. Trigger technician',official_msg:'Der Kaltwasserdurchfluss ist gestört. Das Flowmeter erhält keine oder zu wenige Impulse. Bitte das System neu starten oder ein weiteres Produkt wählen.',official_msg_en:'Cold water flow disturbed. Flowmeter receives no or too few pulses. Restart or select another product.',official_hints:[],official_hints_en:[]},
+        {code:'087',short:'Wasserlauf initialisieren',short_en:'Initialize Water Circuit',cc_solution:null,cc_solution_en:null,official_msg:'Beim Initialisieren können innerhalb von 25 s keine 100 ml über das Brühventil und das Bypassventil dosiert werden. Bitte prüfen Sie den Wasserzulauf und starten Sie das System neu.',official_msg_en:'During initialization, 100 ml could not be dispensed via brew and bypass valve within 25 s. Check water supply and restart.',official_hints:['System neu starten','Wasserversorgung prüfen (Dichtheit und Zulauf)','Wasserkreislauf auf Dichtheit prüfen'],official_hints_en:['Restart system','Check water supply (tightness and flow)','Check water circuit for leaks']},
+        {code:'088',short:'Dampfboilerniveau initialisieren',short_en:'Initialize Steam Boiler Level',cc_solution:null,cc_solution_en:null,official_msg:'Beim Initialisieren wird das Mindestniveau im Dampfboiler innerhalb von 25 s nicht erreicht. Der Dampfboiler wird weiter befüllt. Wenn das Niveau nach 4 min noch immer nicht erreicht wurde, erscheint eine weitere Fehlermeldung. Bitte prüfen Sie in diesem Fall den Wasserzulauf und den Füllstandssensor.',official_msg_en:'During initialization, minimum level in steam boiler not reached within 25 s. Continues filling. If not reached after 4 min, another error appears. Check water supply and level sensor.',official_hints:['Mindestens 4 min warten','Füllstandssensor überprüfen und wenn nötig ersetzen','Wasserversorgung prüfen (Dichtheit und Zulauf)','Wasserkreislauf auf Dichtheit prüfen'],official_hints_en:['Wait at least 4 minutes','Check and replace level sensor if needed','Check water supply (tightness and flow)','Check water circuit for leaks']},
+        {code:'090',short:'Nadelventil IQFlow',short_en:'iQFlow Needle Valve',cc_solution:'IQFlow funktioniert nicht richtig, Kaffee wird aber in den meisten Fällen trotzdem ausgegeben. Wenn Neustart bereits gemacht → Technikereinsatz',cc_solution_en:'iQFlow not working properly, coffee usually still dispensed. If restart done → Technician',official_msg:'Das Nadelventil iQFlow funktioniert nicht richtig.',official_msg_en:'iQFlow needle valve not working properly.',official_hints:['System neu starten'],official_hints_en:['Restart system']},
+        {code:'091',short:'Nadelventil IQFlow',short_en:'iQFlow Needle Valve',cc_solution:'IQFlow funktioniert nicht richtig, Kaffee wird aber in den meisten Fällen trotzdem ausgegeben. Wenn Neustart bereits gemacht → Technikereinsatz',cc_solution_en:'iQFlow not working properly, coffee usually still dispensed. If restart done → Technician',official_msg:'Das Nadelventil iQFlow funktioniert nicht richtig.',official_msg_en:'iQFlow needle valve not working properly.',official_hints:['System neu starten'],official_hints_en:['Restart system']},
+        {code:'092',short:'Dichtheit Nadelventil / Brühgruppe',short_en:'iQFlow / Brew Group Tightness',cc_solution:'Das Nadelventil iQFlow kann nicht geschlossen werden oder die Brühgruppe ist undicht → Mehrmals Neustarten hilft in der Regel, braucht aber unbedingt einen Technikereinsatz. Bg oder IQFlow undicht.',cc_solution_en:'iQFlow needle valve cannot close or brew group leaking → Multiple restarts usually help, but technician absolutely required. BG or iQFlow leaking.',official_msg:'Das Nadelventil iQFlow kann nicht geschlossen werden oder die Brühgruppe ist undicht.',official_msg_en:'iQFlow needle valve cannot close or brew group is leaking.',official_hints:[],official_hints_en:[]},
+        {code:'093',short:'Initialisierung iQFlow',short_en:'iQFlow Initialization',cc_solution:null,cc_solution_en:null,official_msg:'iQFlow wurde initialisiert.',official_msg_en:'iQFlow was initialized.',official_hints:[],official_hints_en:[]},
+        {code:'094',short:'Brühmodul möglicherweise undicht',short_en:'Brew Module Possibly Leaking',cc_solution:null,cc_solution_en:null,official_msg:'Das Brühmodul ist möglicherweise undicht. Prüfen Sie das Brühmodul.',official_msg_en:'Brew module may be leaking. Check the brew module.',official_hints:['Brühmodul auf Dichtheit prüfen'],official_hints_en:['Check brew module for leaks']},
+        {code:'096',short:'Dampfboiler Füllstandssensor',short_en:'Steam Boiler Level Sensor',cc_solution:'Dampfboiler kann nicht gefüllt werden, mehrmals neustarten kann den Fehler beheben. Braucht aber einen Technikereinsatz da Boiler sehr wahrscheinlich verkalkt ist.',cc_solution_en:'Steam boiler cannot be filled, multiple restarts may fix. Technician required → boiler likely heavily calcified.',official_msg:'Dampfboiler Füllstandssensor',official_msg_en:'Steam boiler level sensor',official_hints:[],official_hints_en:[]},
+        {code:'101',short:'Hardware-Fehler FoamMaster',short_en:'FoamMaster Hardware Error',cc_solution:null,cc_solution_en:null,official_msg:'An der FoamMaster-Steuerung ist ein Hardware-Fehler (Kurzschluss) aufgetreten.',official_msg_en:'Hardware error (short circuit) occurred on FoamMaster control.',official_hints:['Anschlusskabel prüfen','Verbindung zu anderen CAN-Knoten prüfen (Programmierung, Menüpunkt 5.9 Ausgänge einzeln (Testmenü CAN-Bus))','Anschlusskabel prüfen'],official_hints_en:['Check connection cable','Check connection to other CAN nodes (Programming, Menu 5.9 Outputs individually (CAN bus test menu))','Check connection cable']},
+        {code:'102',short:'FoamMaster-Software veraltet',short_en:'FoamMaster Software Outdated',cc_solution:null,cc_solution_en:null,official_msg:'Die Foam Master-Software ist nicht aktuell. Bitte aktualisieren Sie die FoamMaster Software mit dem Servicetool auf die neueste Version.',official_msg_en:'FoamMaster software is outdated. Please update using service tool.',official_hints:['FoamMaster-Software mit dem Service-Tool auf die neueste Version aktualisieren','Die minimal erforderliche Version wird angezeigt','Die ausgelesene veraltete SW-Version der Milchsteuerung kann im Menüpunkt 0.10 Systeminformationen eingesehen werden'],official_hints_en:['Update FoamMaster software with service tool to latest version','Minimum required version is displayed','Outdated milk control SW version can be viewed in Menu 0.10 System Information']},
+        {code:'104',short:'Milchdurchfluss beeinträchtigt',short_en:'Milk Flow Impaired',cc_solution:'Milchflowmeter erhält keine Impulse. Milchschläuche auf Knicke prüfen und Reinigung durchführen. Wenn nach Neustart Fehler immer noch auftritt → Technikereinsatz',cc_solution_en:'Milk flowmeter no pulses. Check milk hoses for kinks and clean. If error persists after restart → Technician',official_msg:'Das Flowmeter erhält keine oder zu wenige Impulse. Beziehen Sie ein neues Produkt beziehen. Starten Sie das System neu.',official_msg_en:'Flowmeter receives no or too few pulses. Dispense new product. Restart system.',official_hints:['Neues Produkt beziehen','System neu starten'],official_hints_en:['Dispense new product','Restart system']},
+        {code:'105',short:'Milchheizung',short_en:'Milk Heating',cc_solution:null,cc_solution_en:null,official_msg:'Heizungstendenz registriert.',official_msg_en:'Heating trend detected.',official_hints:[],official_hints_en:[]},
+        {code:'106',short:'Durchfluss Milch-Flowmeter',short_en:'Milk Flowmeter Flow',cc_solution:null,cc_solution_en:null,official_msg:'Milchflowmeter (B11) wurde während der Spülung mit dem Kaltwasser-Flowmeter (B8) ausgemessen.',official_msg_en:'Milk flowmeter (B11) was measured during rinse with cold water flowmeter (B8).',official_hints:[],official_hints_en:[]},
+        {code:'107',short:'Kalibration Milchpumpe FM',short_en:'FM Milk Pump Calibration',cc_solution:null,cc_solution_en:null,official_msg:'Die Milchpumpe wurde während der Reinigung ausgemessen.',official_msg_en:'Milk pump was measured during cleaning.',official_hints:[],official_hints_en:[]},
+        {code:'108',short:'Kalibration Milchpumpe MS',short_en:'MS Milk Pump Calibration',cc_solution:null,cc_solution_en:null,official_msg:'Die Milchpumpe wurde während der Reinigung ausgemessen.',official_msg_en:'Milk pump was measured during cleaning.',official_hints:[],official_hints_en:[]},
+        {code:'110',short:'Unterbruch am Temperatursensor rechts in der Kühleinheit',short_en:'Right Cooler Temp Sensor Break',cc_solution:null,cc_solution_en:null,official_msg:'Der Temperatursensor rechts in der Kühleinheit ist unterbrochen.',official_msg_en:'Right temperature sensor in cooler is interrupted.',official_hints:[],official_hints_en:[]},
+        {code:'111',short:'Temperatursensor rechts in der Kühleinheit',short_en:'Right Cooler Temp Sensor Short',cc_solution:null,cc_solution_en:null,official_msg:'Am Temperatursensor rechts in der Kühleinheit ist ein Kurzschluss aufgetreten.',official_msg_en:'Short circuit on right temperature sensor in cooler.',official_hints:[],official_hints_en:[]},
+        {code:'112',short:'Unterbruch am Temperatursensor links in der Kühleinheit',short_en:'Left Cooler Temp Sensor Break',cc_solution:null,cc_solution_en:null,official_msg:'Der Temperatursensor links in der Kühleinheit ist unterbrochen.',official_msg_en:'Left temperature sensor in cooler is interrupted.',official_hints:[],official_hints_en:[]},
+        {code:'113',short:'Temperatursensor links in der Kühleinheit',short_en:'Left Cooler Temp Sensor Short',cc_solution:null,cc_solution_en:null,official_msg:'Am Temperatursensor links in der Kühleinheit ist ein Kurzschluss aufgetreten.',official_msg_en:'Short circuit on left temperature sensor in cooler.',official_hints:[],official_hints_en:[]},
+        {code:'115',short:'Dampfthermoblock',short_en:'Steam Thermoblock',cc_solution:null,cc_solution_en:null,official_msg:'Heizungstendenz registriert.',official_msg_en:'Heating trend detected.',official_hints:[],official_hints_en:[]},
+        {code:'116',short:'Regenerierung Milchthermoblock',short_en:'Milk Thermoblock Regeneration',cc_solution:null,cc_solution_en:null,official_msg:'Hochtemperatur-Regenerierung Milchthermoblock: Aufheizdauer',official_msg_en:'High temperature regeneration milk thermoblock: Heating duration',official_hints:[],official_hints_en:[]},
+        {code:'117',short:'Regenerierung Milchthermoblock',short_en:'Milk Thermoblock Regeneration',cc_solution:null,cc_solution_en:null,official_msg:'Hochtemperatur-Regenerierung Milchthermoblock: Zyklusdauer',official_msg_en:'High temperature regeneration milk thermoblock: Cycle duration',official_hints:[],official_hints_en:[]},
+        {code:'118',short:'Hochtemperatur-Regenerierung fehlgeschlagen',short_en:'High Temp Regeneration Failed',cc_solution:null,cc_solution_en:null,official_msg:'Die Hochtemperatur-Regenerierung des Milchthermoblocks ist fehlgeschlagen.',official_msg_en:'High temperature regeneration of milk thermoblock failed.',official_hints:[],official_hints_en:[]},
+        {code:'120',short:'Quirler reinigen',short_en:'Clean Whirler',cc_solution:'Der Wasserdurchfluss des Pulversystems ist gestört → Quirler reinigen und Pulverkanale von Behälter bis Auslauf reinigen. Anschliessend manuelles Spülen auslösen. Wenn immer noch Fehler → Technikereinsatz',cc_solution_en:'Powder system water flow disturbed → Clean whirler and powder channels from container to outlet. Then trigger manual rinse. If error persists → Technician',official_msg:'Der Wasserdurchfluss des Pulversystems ist gestört. Bitte reinigen Sie die Kaffeemaschine und starten Sie ggf. das System neu.',official_msg_en:'Powder system water flow disturbed. Clean the coffee machine and restart if necessary.',official_hints:['Wasserkreislauf des Pulversystems prüfen','Mixerkammer reinigen','Kaffeemaschine mit Reinigungsprogramm reinigen','Die Tür muss mindestens 20 s geöffnet bleiben, damit die Meldung verschwindet'],official_hints_en:['Check powder system water circuit','Clean mixer chamber','Clean coffee machine with cleaning program','Door must remain open for at least 20 s for message to disappear']},
+        {code:'149',short:'Fehler am Zustellgerät',short_en:'Delivery Unit Error',cc_solution:null,cc_solution_en:null,official_msg:'Bitte beachten Sie die Fehlermeldung am Display des Zustellgeräts.',official_msg_en:'Please note the error message on the delivery unit display.',official_hints:[],official_hints_en:[]},
+        {code:'206',short:'Abrechnung CAN',short_en:'Payment CAN',cc_solution:'Die Abrechnung und die Kaffeemaschine neu Starten. Stromversorgung Abrechnung prüfen',cc_solution_en:'Restart payment and coffee machine. Check payment power supply',official_msg:'Das Abrechnungsgerät hat nicht innerhalb der vorgegebenen Zeit einen Status gemeldet.',official_msg_en:'Payment device did not report status within specified time.',official_hints:[],official_hints_en:[]},
+        {code:'207',short:'Abrechnung CAN',short_en:'Payment CAN',cc_solution:null,cc_solution_en:null,official_msg:'Am Abrechnungsgerät (Interface) ist ein Kommunikationsfehler aufgetreten.',official_msg_en:'Communication error occurred on payment device (interface).',official_hints:[],official_hints_en:[]},
+        {code:'208',short:'Abrechnung',short_en:'Payment',cc_solution:null,cc_solution_en:null,official_msg:'Am Abrechnungsgerät (Interface oder Bezahlsystem) ist ein Fehler aufgetreten. Bitte prüfen Sie das Abrechnungsgerät und starten Sie das System neu.',official_msg_en:'Error occurred on payment device (interface or payment system). Check payment device and restart.',official_hints:[],official_hints_en:[]},
+        {code:'209',short:'Kommunikationsfehler CS',short_en:'CS Communication Error',cc_solution:'Abrechnungsgerät reagiert nicht → Neustart der Abrechnung ansonsten Techniker',cc_solution_en:'Payment device not responding → Restart payment, otherwise technician',official_msg:'Das Abrechnungsgerät reagiert nicht. Bitte prüfen Sie, ob das Abrechnungsgerät eingeschaltet ist.',official_msg_en:'Payment device not responding. Check if payment device is switched on.',official_hints:['Stromversorgung des Abrechnungsgeräts prüfen','Verbindung vom Abrechnungsgerät zur Kaffeemaschine prüfen'],official_hints_en:['Check payment device power supply','Check connection from payment device to coffee machine']},
+        {code:'290',short:'Kommunikation RFID-Modul',short_en:'RFID Module Communication',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Die Verbindung von der Kaffeemaschine zum RFID-Modul ist unterbrochen oder das RFID-Modul ist defekt.',official_msg_en:'Connection from coffee machine to RFID module is interrupted or RFID module is defective.',official_hints:[],official_hints_en:[]},
+        {code:'291',short:'Fehler am Touch-Display',short_en:'Touch Display Error',cc_solution:null,cc_solution_en:null,official_msg:'Das Touch-Display funktioniert nicht.',official_msg_en:'The touch display is not working.',official_hints:[],official_hints_en:[]},
+        {code:'320',short:'Inkrementsensor Auslaufmotor',short_en:'Outlet Motor Increment Sensor',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Vom Inkrementsensor Auslaufmotor wurden keine Signale empfangen.',official_msg_en:'No signals received from outlet motor increment sensor.',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'332',short:'Kommunikation I2C iQFlow',short_en:'iQFlow I2C Communication',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Die I2C-Kommunikation zwischen der Kaffeemaschine und iQFlow funktioniert nicht korrekt.',official_msg_en:'I2C communication between coffee machine and iQFlow not working correctly.',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'333',short:'Kommunikation Flavor Station',short_en:'Flavor Station Communication',cc_solution:'Stromversorgung Flavor Station zusammen mit Kunden überprüfen',cc_solution_en:'Check Flavor Station power supply with customer',official_msg:'Die Flavor-Steuerung antwortet nicht. Bitte prüfen Sie die Verbindungen zwischen Kaffeemaschine und Flavor Station und stellen Sie sicher, dass die korrekte CAN-ID hinterlegt ist.',official_msg_en:'Flavor control not responding. Check connections between coffee machine and Flavor Station and ensure correct CAN ID.',official_hints:['Anschlusskabel prüfen','Verbindung zu anderen CAN-Knoten prüfen, Programmierung, Menüpunkt 5.9 Ausgänge einzeln'],official_hints_en:['Check connection cable','Check connection to other CAN nodes, Programming, Menu 5.9 Outputs individually']},
+        {code:'403',short:'Entkalkung fehlgeschlagen',short_en:'Descaling Failed',cc_solution:'Neustart der Km und Entkalkung erneut durchführen<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine and repeat descaling<br>If error returns → Technician',official_msg:'Die letzte Entkalkung konnte nicht erfolgreich abgeschlossen werden.',official_msg_en:'Last descaling could not be completed successfully.',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'412',short:'Reinigungsbehälter Cleanmaster voll',short_en:'Cleanmaster Cleaning Container Full',cc_solution:'Blauer Reinigungsbehälter entfernen und gründlich Ausspülen. CleanMaster trocknen und Behälter wieder einsetzen → Neustart der Kaffeemaschine',cc_solution_en:'Remove blue cleaning container and rinse thoroughly. Dry CleanMaster and reinsert container → Restart coffee machine',official_msg:'Den Reinigungsbehälter des Pumpenmodul-CleanMasters leeren.',official_msg_en:'Empty the cleaning container of the Pump Module CleanMaster.',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'427',short:'Satzbehälter fehlt',short_en:'Puck Container Missing',cc_solution:'Mit dem Kunden prüfen ob der Magnet noch vorhanden ist, ansonsten neuen Satzbehälter senden und Überwachung überbrücken',cc_solution_en:'Check with customer if magnet is still present, otherwise send new puck container and bypass monitoring',official_msg:'Der Satzbehälter fehlt oder ist nicht richtig eingesetzt.',official_msg_en:'Puck container is missing or not inserted correctly.',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'428',short:'Tropfschale fehlt',short_en:'Drip Tray Missing',cc_solution:'Mit dem Kunden die Sensoren und Kontakte der Tropfschale trocknen',cc_solution_en:'Dry drip tray sensors and contacts with customer',official_msg:'Die Tropfschale fehlt oder ist nicht richtig eingesetzt. Setzen Sie die Tropfschale korrekt ein.',official_msg_en:'Drip tray is missing or not inserted correctly. Insert drip tray properly.',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'431',short:'Bohnenbehälter fehlt',short_en:'Bean Container Missing',cc_solution:'Türe öffnen und den roten Hebel oben mit Kraft reinschieben',cc_solution_en:'Open door and push red lever up with force',official_msg:'Der Bohnen- oder Pulverbehälter fehlt oder ist nicht richtig eingesetzt bzw. verriegelt.',official_msg_en:'Bean or powder container is missing or not inserted/locked correctly.',official_hints:['Bohnen- oder Pulverbehälter richtig einsetzen und verriegeln'],official_hints_en:['Insert and lock bean or powder container correctly']},
+        {code:'501',short:'Temperatursensor Dampfboiler',short_en:'Steam Boiler Temp Sensor',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Am Temperatursensor der Heizung 2 ist ein Kurzschluss aufgetreten. Bitte starten Sie das System neu.',official_msg_en:'Short circuit on heater 2 temperature sensor. Please restart.',official_hints:['NTC-Temperatursensor prüfen und wenn nötig ersetzen','Anschlusskabel und Anschlussstecker des Temperatursensors prüfen','System neu starten'],official_hints_en:['Check NTC temperature sensor and replace if necessary','Check connection cable and plug','Restart system']},
+        {code:'502',short:'Temperatursensor Dampfboiler',short_en:'Steam Boiler Temp Sensor',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Der Temperatursensor der Heizung 2 fehlt oder ist unterbrochen. Bitte starten Sie das System neu.',official_msg_en:'Heater 2 temperature sensor missing or interrupted. Please restart.',official_hints:['NTC-Temperatursensor prüfen und wenn nötig ersetzen','Anschlusskabel und Anschlussstecker des Temperatursensors prüfen','System neu starten'],official_hints_en:['Check NTC temperature sensor and replace if necessary','Check connection cable and plug','Restart system']},
+        {code:'503',short:'Temperaturdifferenz Dampfboiler',short_en:'Steam Boiler Temp Difference',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Am NTC-Temperatursensor der Heizung 2 wurde beim Heizen innerhalb von 60 s kein Temperaturanstieg um mind. $2^{\\circ}C$ festgestellt. Bitte starten Sie das System neu.',official_msg_en:'No temperature increase of at least $2^{\\circ}C$ detected at heater 2 NTC sensor within 60 s of heating. Please restart.',official_hints:['Stromkreis prüfen','Klixon prüfen','NTC-Temperatursensor prüfen und wenn nötig ersetzen','Heizelement 2 prüfen'],official_hints_en:['Check power circuit','Check Klixon','Check NTC temperature sensor and replace if necessary','Check heater 2']},
+        {code:'504',short:'Übertemperatur Dampfboiler',short_en:'Steam Boiler Overtemperature',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Die Temperatur an der Heizung 2 ist über $150^{\\circ}C$ oder mehr als $25^{\\circ}$ über den Sollwert angestiegen. Bitte starten Sie das System neu.',official_msg_en:'Temperature at heater 2 exceeded $150^{\\circ}C$ or $25^{\\circ}$ above setpoint. Please restart.',official_hints:['Anschlusskabel und Anschlussstecker des Temperatursensors prüfen','System neu starten','Stromkreis prüfen','Klixon prüfen','NTC-Temperatursensor prüfen und wenn nötig ersetzen','Heizelement 2 prüfen'],official_hints_en:['Check connection cable and plug','Restart system','Check power circuit','Check Klixon','Check NTC temperature sensor and replace if necessary','Check heater 2']},
+        {code:'509',short:'Temperatursensor Brühboiler',short_en:'Brew Boiler Temp Sensor',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Am NTC-Temperatursensor der Heizung 1 ist ein Kurzschluss aufgetreten. Bitte starten Sie das System neu.',official_msg_en:'Short circuit on heater 1 NTC temperature sensor. Please restart.',official_hints:['NTC-Temperatursensor prüfen und wenn nötig ersetzen','Anschlusskabel und Anschlussstecker des Temperatursensors prüfen','System neu starten'],official_hints_en:['Check NTC temperature sensor and replace if necessary','Check connection cable and plug','Restart system']},
+        {code:'510',short:'Temperatursensor Brühboiler',short_en:'Brew Boiler Temp Sensor',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Der Temperatursensor (NTC B1) für die Heizung 1 (K1) ist unterbrochen oder fehlt. Bitte starten Sie das System neu.',official_msg_en:'Temperature sensor (NTC B1) for heater 1 (K1) is interrupted or missing. Please restart.',official_hints:['NTC-Temperatursensor prüfen und wenn nötig ersetzen','Anschlusskabel und Anschlussstecker des Temperatursensors prüfen','System neu starten'],official_hints_en:['Check NTC temperature sensor and replace if necessary','Check connection cable and plug','Restart system']},
+        {code:'511',short:'Temperaturdifferenz Brühboiler',short_en:'Brew Boiler Temp Difference',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Am NTC-Temperatursensor der Heizung 1 wurde beim Heizen innerhalb von 60 s kein Temperaturanstieg um mindestens $2^{\\circ}C$ festgestellt. Bitte starten Sie das System neu.',official_msg_en:'No temperature increase of at least $2^{\\circ}C$ detected at heater 1 NTC sensor within 60 s of heating. Please restart.',official_hints:['Stromkreis prüfen','Klixon prüfen','NTC-Temperatursensor prüfen und wenn nötig ersetzen','Heizelement 2 prüfen','Anschlüsse prüfen','System neu starten'],official_hints_en:['Check power circuit','Check Klixon','Check NTC temperature sensor and replace if necessary','Check heater 2','Check connections','Restart system']},
+        {code:'512',short:'Übertemperatur Brühboiler',short_en:'Brew Boiler Overtemperature',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Die Temperatur im Boiler 1 ist auf über $150^{\\circ}C$ oder mehr als $25^{\\circ}$ über den Sollwert angestiegen. Bitte starten Sie das System neu.',official_msg_en:'Temperature in boiler 1 exceeded $150^{\\circ}C$ or $25^{\\circ}$ above setpoint. Please restart.',official_hints:['Stromkreis prüfen','Klixon prüfen','NTC-Temperatursensor prüfen und wenn nötig ersetzen','Heizelement 2 prüfen','Anschlüsse prüfen','System neu starten'],official_hints_en:['Check power circuit','Check Klixon','Check NTC temperature sensor and replace if necessary','Check heater 2','Check connections','Restart system']},
+        {code:'517',short:'Temperatursensor Thermoblock',short_en:'Thermoblock Temp Sensor',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Am NTC-Tempertursensor im Thermoblock ist ein Kurzschluss aufgetreten. Bitte starten Sie das System neu.',official_msg_en:'Short circuit on NTC temperature sensor in thermoblock. Please restart.',official_hints:['NTC-Temperatursensor prüfen und wenn nötig ersetzen','Anschlusskabel und Anschlussstecker des Temperatursensors prüfen','System neu starten'],official_hints_en:['Check NTC temperature sensor and replace if necessary','Check connection cable and plug','Restart system']},
+        {code:'518',short:'Temperatursensor Thermoblock',short_en:'Thermoblock Temp Sensor',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Der NTC-Tempertursensor im Thermoblock ist unterbrochen. Bitte starten Sie das System neu.',official_msg_en:'NTC temperature sensor in thermoblock is interrupted. Please restart.',official_hints:['NTC-Temperatursensor prüfen und wenn nötig ersetzen','Anschlusskabel und Anschlussstecker des Temperatursensors prüfen','System neu starten'],official_hints_en:['Check NTC temperature sensor and replace if necessary','Check connection cable and plug','Restart system']},
+        {code:'519',short:'Temperaturdifferenz Thermoblock',short_en:'Thermoblock Temp Difference',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Am Temperatursensor Thermoblock wurde beim Heizen innerhalb von 60 s kein Temperaturanstieg um mindestens $3^{\\circ}C$ festgestellt. Bitte starten Sie das System neu.',official_msg_en:'No temperature increase of at least $3^{\\circ}C$ detected at thermoblock sensor within 60 s of heating. Please restart.',official_hints:['Stromkreis prüfen','Klixon prüfen','NTC-Temperatursensor prüfen und wenn nötig ersetzen','Heizelement 2 prüfen','Anschlüsse prüfen','System neu starten'],official_hints_en:['Check power circuit','Check Klixon','Check NTC temperature sensor and replace if necessary','Check heater 2','Check connections','Restart system']},
+        {code:'544',short:'Temperatursensor Heisswasserboiler',short_en:'Hot Water Boiler Temp Sensor',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Am Temperatursensor (NTC) an der Heizung 3 ist ein Kurzschluss aufgetreten. Bitte starten Sie das System neu.',official_msg_en:'Short circuit on temperature sensor (NTC) at heater 3. Please restart.',official_hints:['NTC-Temperatursensor prüfen und wenn nötig ersetzen','Anschlüsse prüfen','System neu starten'],official_hints_en:['Check NTC temperature sensor and replace if necessary','Check connections','Restart system']},
+        {code:'545',short:'Temperatursensor Heisswasserboiler',short_en:'Hot Water Boiler Temp Sensor',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Der Temperatursensor (NTC) an der Heizung 3 fehlt oder hat einen Unterbruch. Bitte starten Sie das System neu.',official_msg_en:'Temperature sensor (NTC) at heater 3 is missing or interrupted. Please restart.',official_hints:['NTC-Temperatursensor prüfen und wenn nötig ersetzen','Anschlüsse prüfen','System neu starten'],official_hints_en:['Check NTC temperature sensor and replace if necessary','Check connections','Restart system']},
+        {code:'546',short:'Temperaturdifferenz Heisswasserboiler',short_en:'Hot Water Boiler Temp Difference',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'An der Heizung 3 wurde beim Heizen innerhalb von 60s kein Temperaturanstieg von mind. $2^{\\circ}C$ festgestellt. Bitte starten Sie das System neu.',official_msg_en:'No temperature increase of at least $2^{\\circ}C$ detected at heater 3 within 60 s of heating. Please restart.',official_hints:['Stromkreis prüfen','Klixon prüfen','NTC-Temperatursensor prüfen und wenn nötig ersetzen','Heizelement 2 prüfen','Anschlüsse prüfen','System neu starten'],official_hints_en:['Check power circuit','Check Klixon','Check NTC temperature sensor and replace if necessary','Check heater 2','Check connections','Restart system']},
+        {code:'547',short:'Übertemperatur Heisswasserboiler',short_en:'Hot Water Boiler Overtemperature',cc_solution:'Neustart der Km<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine<br>If error returns → Technician',official_msg:'Die Temperatur an der Heizung 3 ist auf über $150^{\\circ}C$ oder $25^{\\circ}C$ über den Sollwert angestiegen. Bitte starten Sie das System neu.',official_msg_en:'Temperature at heater 3 exceeded $150^{\\circ}C$ or $25^{\\circ}C$ above setpoint. Please restart.',official_hints:['Stromkreis prüfen','Klixon prüfen','NTC-Temperatursensor prüfen und wenn nötig ersetzen','Heizelement 2 prüfen','Anschlüsse prüfen','System neu starten'],official_hints_en:['Check power circuit','Check Klixon','Check NTC temperature sensor and replace if necessary','Check heater 2','Check connections','Restart system']},
+        {code:'551',short:'Impulsfehler Mahlwerk links',short_en:'Left Grinder Pulse Error',cc_solution:'Neustart der Km und betroffenes Mahlwerk mit dem Staubsauger von den Bohnen befreien.<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine and vacuum affected grinder to remove beans.<br>If error returns → Technician',official_msg:'Impulsfehler am linken Mahlwerk',official_msg_en:'Pulse error on left grinder',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'552',short:'Impulsfehler Mahlwerk rechts',short_en:'Right Grinder Pulse Error',cc_solution:'Neustart der Km und betroffenes Mahlwerk mit dem Staubsauger von den Bohnen befreien.<br>Wenn Fehler wieder kommt → Techniker',cc_solution_en:'Restart machine and vacuum affected grinder to remove beans.<br>If error returns → Technician',official_msg:'Impulsfehler am rechten Mahlwerk',official_msg_en:'Pulse error on right grinder',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'600',short:'Wartung notwendig',short_en:'Maintenance Required',cc_solution:'Wartung notwendig',cc_solution_en:'Maintenance required',official_msg:'Gemäss Wartungsplan muss eine Wartung durchgeführt werden.',official_msg_en:'Maintenance must be performed according to maintenance schedule.',official_hints:['Wartung gemäss Wartungsplan durchführen','Wartungszähler zurücksetzen'],official_hints_en:['Perform maintenance according to schedule','Reset maintenance counter']},
+        {code:'602',short:'Wasserfilter',short_en:'Water Filter',cc_solution:'Wasserfilter fällig → Technikereinsatz',cc_solution_en:'Water filter due → Technician required',official_msg:'Der Wasserfilter ist verbraucht und muss ersetzt werden.',official_msg_en:'Water filter is exhausted and must be replaced.',official_hints:['Wasserfilter ersetzen und Zähler zurücksetzen, Programmierung.'],official_hints_en:['Replace water filter and reset counter, Programming.']},
+        {code:'603',short:'Satzbehälter voll',short_en:'Puck Container Full',cc_solution:'Kunde sagen dass die Türe mindestens 10 Sekunden geöffnet sein muss um den Zähler zurückzusetzen',cc_solution_en:'Tell customer door must be open for at least 10 seconds to reset counter',official_msg:'Der Satzbehälter ist voll. Bitte leeren Sie den Satzbehälter.',official_msg_en:'Puck container is full. Please empty the puck container.',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'604',short:'Satzbehälter leeren',short_en:'Empty Puck Container',cc_solution:'Kunde sagen dass die Türe mindestens 10 Sekunden geöffnet sein muss um den Zähler zurückzusetzen',cc_solution_en:'Tell customer door must be open for at least 10 seconds to reset counter',official_msg:'Der Satzbehälter ist voll. Es sind nur noch wenige Kaffeebezüge möglich. Bitte leeren Sie den Satzbehälter.',official_msg_en:'Puck container is full. Only a few more coffees possible. Please empty the puck container.',official_hints:['Satzbehälter entnehmen, leeren, reinigen und wieder einsetzen','Die Tür muss mindestens 5 s geöffnet sein'],official_hints_en:['Remove, empty, clean and reinsert puck container','Door must remain open for at least 5 s']},
+        {code:'606',short:'Behälter links hinten füllen',short_en:'Fill Left Rear Container',cc_solution:'Kunde soll links auf den Behälter klopfen ( Gleich stark wie an einer Tür)',cc_solution_en:'Customer should tap left container (as strong as knocking on a door)',official_msg:'Der linke Bohnenbehälter ist leer (Pos. 1). Bitte füllen Sie Kaffeebohnen nach.',official_msg_en:'Left bean container is empty (Pos. 1). Please refill coffee beans.',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'607',short:'Kein Kaffee in der Brühkammer',short_en:'No Coffee in Brew Chamber',cc_solution:'Kunde fragen, ob viel unverbrauchtes Kaffeepulver in der Kaffeemaschine ist, wenn nein ist ein Mahlwerk blockiert. Mit dem Kunden das entsprechende Mahlwerk deblockieren',cc_solution_en:'Ask customer if much unused coffee powder in machine, if not, grinder blocked. Unblock with customer',official_msg:'Die Brühkammer ist leer. Bitte füllen Sie Kaffeebohnen nach oder füllen Sie Kaffeepulver in die Einwurfklappe. Prüfen Sie, ob Bohnen- und Pulverbehälter korrekt verriegelt sind.',official_msg_en:'Brew chamber is empty. Please refill coffee beans or add ground coffee via chute. Check if bean and powder containers are locked correctly.',official_hints:['Kaffeemehlrutsche prüfen und mit Pinsel reinigen','Lichtschranke der Bohnenüberwachung prüfen','Kaffeebohnen bzw. Kaffeepulver einfüllen'],official_hints_en:['Check coffee powder chute and clean with brush','Check bean monitoring light barrier','Refill coffee beans or ground coffee']},
+        {code:'608',short:'Behälter rechts hinten füllen',short_en:'Fill Right Rear Container',cc_solution:'Kunde soll rechts auf den Behälter klopfen ( Gleich stark wie an einer Tür)',cc_solution_en:'Customer should tap right container (as strong as knocking on a door)',official_msg:'Der rechte Bohnenbehälter ist leer (Pos. 2). Bitte füllen Sie Kaffeebohnen nach.',official_msg_en:'Right bean container is empty (Pos. 2). Please refill coffee beans.',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'625',short:'Wendeadapter links fehlt',short_en:'Left Flip Adapter Missing',cc_solution:'Mit dem Kunden den Milchbehälter entfernen und den Wendeadapter reinigen (Auch Kühlschrankseitig) Anschliessend Position überprüfen und wieder einsetzen. Ansonsten sollte im Franke Karton ein Ersatz sein.',cc_solution_en:'Remove milk container with customer and clean flip adapter (also fridge side). Then check position and reinsert. Otherwise, spare should be in Franke box.',official_msg:'Es können keine Getränke mit Milch zubereitet werden, da der Wendeadapter links in der Kühleinheit fehlt oder nicht richtig eingesetzt ist. Setzen Sie den Wendeadapter ein oder wenden Sie ihn, wenn Sie gerade eine Reinigung durchgeführt haben.',official_msg_en:'No milk drinks possible because left flip adapter in cooler is missing or not inserted correctly. Insert flip adapter or flip it if you just cleaned.',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'628',short:'Milchsystem konnte nicht vorbereitet werden',short_en:'Milk System Could Not Be Prepared',cc_solution:'überprüfen ob Milch eingefüllt ist und kein Knick in der Milchleitung. Mit Kunde zusammen das Milchsystem vorbereiten und informieren, dass nicht auf Stop gedrückt werden darf. Wenn immer noch keine Milch → Techniker',cc_solution_en:'Check if milk filled and no kink in milk line. Prepare milk system with customer and inform not to press stop. If still no milk → Technician',official_msg:'Das Milchsystem konnte nicht vorbereitet werden. Die Milch-Ressource ist gesperrt.',official_msg_en:'Milk system could not be prepared. Milk resource is locked.',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'637',short:'Wendeadapter fehlt',short_en:'Flip Adapter Missing',cc_solution:'Mit dem Kunden den Milchbehälter entfernen und den Wendeadapter reinigen (Auch Kühlschrankseitig) Anschliessend Position überprüfen und wieder einsetzen. Ansonsten sollte im Franke Karton ein Ersatz sein.',cc_solution_en:'Remove milk container with customer and clean flip adapter (also fridge side). Then check position and reinsert. Otherwise, spare should be in Franke box.',official_msg:'Es können keine Getränke mit Milch zubereitet werden, da der Wendeadapter rechts in der Kühleinheit fehlt oder nicht richtig eingesetzt ist. Setzen Sie den Wendeadapter ein oder wenden Sie ihn, wenn Sie gerade eine Reinigung durchgeführt haben.',official_msg_en:'No milk drinks possible because right flip adapter in cooler is missing or not inserted correctly. Insert flip adapter or flip it if you just cleaned.',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']},
+        {code:'638',short:'Milchsystem konnte nicht vorbereitet werden',short_en:'Milk System Could Not Be Prepared',cc_solution:'überprüfen ob Milch eingefüllt ist und kein Knick in der Milchleitung. Mit Kunde zusammen das Milchsystem vorbereiten und informieren, dass nicht auf Stop gedrückt werden darf. Wenn immer noch keine Milch → Techniker',cc_solution_en:'Check if milk filled and no kink in milk line. Prepare milk system with customer and inform not to press stop. If still no milk → Technician',official_msg:'Das Milchsystem konnte nicht vorbereitet werden. Die [Milchsorte] ist gesperrt.',official_msg_en:'Milk system could not be prepared. The [milk type] is locked.',official_hints:['(Keine offiziellen Hinweise im PDF für diesen Code)'],official_hints_en:['(No official hints in PDF for this code)']}
+    ];
+
+    // === Controller / UI-Logik ===
+    const els = {
+      langToggle: document.getElementById('language-toggle'),
+      indexView: document.getElementById('index-view'),
+      resultView: document.getElementById('result-view'),
+      codeInput: document.getElementById('code-input'),
+      searchBtn: document.getElementById('search-button'),
+      backBtn: document.getElementById('back-button'),
+      errMsg: document.getElementById('error-message'),
+      resultCodeText: document.getElementById('result-code-text'),
+      resultShortText: document.getElementById('result-short-text'),
+      ccTitle: document.getElementById('cc-title'),
+      ccContent: document.getElementById('cc-solution-content'),
+      offTitle: document.getElementById('official-title'),
+      offErrLabel: document.getElementById('official-error-label'),
+      offErrMsg: document.getElementById('official-error-msg'),
+      offHintsLabel: document.getElementById('official-hints-label'),
+      offHintsList: document.getElementById('official-hints-list'),
+      mainTitle: document.getElementById('main-title'),
+      indexInstruction: document.getElementById('index-instruction'),
+    };
+
+    function setTexts() {
+      const dict = t[lang];
+      els.mainTitle.textContent = dict.title;
+      els.indexInstruction.textContent = dict.instruction;
+      els.codeInput.placeholder = dict.placeholder;
+      els.searchBtn.textContent = dict.search;
+      els.langToggle.textContent = dict.toggle;
+      els.ccTitle.textContent = dict.ccTitle;
+      els.offTitle.textContent = dict.techTitle;
+      els.offErrLabel.textContent = dict.errorMsg;
+      els.offHintsLabel.textContent = dict.hints;
+      els.backBtn.textContent = dict.back;
+    }
+
+    function showIndex() {
+      els.resultView.style.display = 'none';
+      els.resultView.style.opacity = '0';
+      els.indexView.style.display = 'block';
+      els.errMsg.textContent = '';
+      els.codeInput.focus();
+    }
+
+    function showResult() {
+      els.indexView.style.display = 'none';
+      els.resultView.style.display = 'block';
+      requestAnimationFrame(() => { els.resultView.style.opacity = '1'; });
+    }
+
+    // ✅ Regex-Fix
+    function isValidCode(v) { return /^\d{3}$/.test(v); }
+
+    function renderResult(item) {
+      const dict = t[lang];
+      const short = (lang === 'de') ? item.short : item.short_en;
+      const cc = (lang === 'de') ? item.cc_solution : item.cc_solution_en;
+      const offMsg = (lang === 'de') ? item.official_msg : item.official_msg_en;
+      const hints = (lang === 'de') ? (item.official_hints || []) : (item.official_hints_en || []);
+
+      els.resultCodeText.textContent = `Code ${item.code}`;
+      els.resultShortText.textContent = short || '';
+      els.ccContent.innerHTML = cc || dict.noSolution;
+      els.offErrMsg.textContent = offMsg || '';
+      els.offHintsList.innerHTML = '';
+      if (hints.length) {
+        hints.forEach(h => {
+          const li = document.createElement('li');
+          li.textContent = h;
+          els.offHintsList.appendChild(li);
+        });
+      } else {
+        const li = document.createElement('li');
+        li.textContent = dict.noHints;
+        els.offHintsList.appendChild(li);
+      }
+    }
+
+    function searchAndRender() {
+      const code = (els.codeInput.value || '').trim();
+      if (!isValidCode(code)) {
+        els.errMsg.textContent = t[lang].notFound.replace('{code}', code || '—');
+        return;
+      }
+      const item = errorData.find(e => e.code === code);
+      // === Verbesserte Fehlerausgabe ===
+      if (!item) {
+        els.codeInput.classList.add('input-error');
+        els.codeInput.setAttribute('aria-invalid', 'true');
+        setTimeout(()=>{
+          els.codeInput.classList.remove('input-error');
+          els.codeInput.removeAttribute('aria-invalid');
+        }, 400);
+        els.errMsg.textContent = t[lang].notFound.replace('{code}', code);
+        return;
+      }
+      els.errMsg.textContent = '';
+      renderResult(item);
+      showResult();
+    }
+
+    // Events
+    els.searchBtn.addEventListener('click', searchAndRender);
+    els.codeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') searchAndRender(); });
+    els.backBtn.addEventListener('click', showIndex);
+
+    // === Eingabevalidierung & Auto-Suche ===
+    // Nur Ziffern zulassen und auf 3 begrenzen
+    els.codeInput.addEventListener('input', (e)=>{
+      const cleaned = (e.target.value||'').replace(/\D/g,'').slice(0,3);
+      if (e.target.value !== cleaned) e.target.value = cleaned;
+    });
+    // Auto-Suche starten, sobald 3 Ziffern stehen
+    els.codeInput.addEventListener('input', (e) => {
+      const v = (e.target.value || '').trim();
+      if (/^\d{3}$/.test(v)) searchAndRender();
+    });
+
+    // Sprach-Toggle
+    els.langToggle.addEventListener('click', () => {
+      lang = (lang === 'de') ? 'en' : 'de';
+      setTexts();
+      localStorage.setItem('lang', lang);
+      const codeShown = els.resultCodeText.textContent.match(/\d{3}/); // ✅ kein doppelter Backslash
+      if (codeShown) {
+        const item = errorData.find(e => e.code === codeShown[0]);
+        if (item) renderResult(item);
+      }
+    });
+
+    // Initial
+    setTexts();
+    showIndex();
+
+    // === Klickbare Beispielcodes ===
+    document.querySelectorAll('.examples [data-c]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        els.codeInput.value = b.dataset.c;
+        searchAndRender(true);
+      });
+    });
+
+    // === ESC schliesst die Ergebnisansicht ===
+    document.addEventListener('keydown', (e)=>{
+      if (e.key === 'Escape' && els.resultView.style.display === 'block') showIndex();
+    });
+
+    // === Schritte in Zwischenablage kopieren ===
+    document.getElementById('copy-steps').addEventListener('click', async () => {
+      const title = els.resultCodeText.textContent.trim();
+      const short = els.resultShortText.textContent.trim();
+      const cc = els.ccContent.innerText.trim();
+      const hints = [...els.offHintsList.querySelectorAll('li')].map(li => `• ${li.textContent}`).join('\n');
+      const txt = `${title}\n${short}\n\nCallcenter:\n${cc}\n\nHinweise:\n${hints}`;
+      try {
+        await navigator.clipboard.writeText(txt);
+        els.errMsg.style.color = 'green';
+        els.errMsg.textContent = (lang==='de') ? 'Schritte kopiert.' : 'Steps copied.';
+        setTimeout(()=>{ els.errMsg.textContent=''; els.errMsg.style.color=''; },1500);
+      } catch {
+        els.errMsg.textContent = (lang==='de') ? 'Kopieren fehlgeschlagen.' : 'Copy failed.';
+      }
+    });
+</script>
+
+
+</body></html>
